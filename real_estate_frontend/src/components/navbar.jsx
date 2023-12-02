@@ -8,17 +8,19 @@ export default function Navbar() {
       <div className="flex justify-between items-center max-w-6xl mx-auto p-3">
         <Link to={"/"}>
           <h1 className="font-bold text-md sm:text-xl flex flex-wrap">
-            <span className="text-blue-400">Pure</span>
+            <span className="text-blue-800">Pure</span>
             <span className="text-slate-800">Nest</span>
           </h1>
         </Link>
-        <form className="bg-slate-100 p-3 rounded-lg flex items-center w-24 sm:w-64">
+        <form className="bg-slate-100 p-3 rounded-lg flex items-center justify-between w-24 sm:w-64">
           <input
             type="text"
             placeholder="Search..."
             className="bg-transparent focus:outline-none"
           />
-          <FaSearch className="text-black" />
+          <button className="mx-2" type="submit">
+            <FaSearch className="text-black" />
+          </button>
         </form>
         <ul className="flex gap-4">
           <Link to={"/"}>
