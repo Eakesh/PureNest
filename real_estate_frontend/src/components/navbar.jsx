@@ -12,15 +12,13 @@ export default function Navbar() {
             <span className="text-slate-800">Nest</span>
           </h1>
         </Link>
-        <form className="bg-slate-100 p-3 rounded-lg flex items-center justify-between w-24 sm:w-64">
+        <form className="bg-slate-100 p-3 flex items-center rounded-lg w-24 sm:w-64">
           <input
             type="text"
             placeholder="Search..."
             className="bg-transparent focus:outline-none"
           />
-          <button className="mx-2" type="submit">
-            <FaSearch className="text-black" />
-          </button>
+          <FaSearch className="text-black" />
         </form>
         <ul className="flex gap-4">
           <Link to={"/"}>
