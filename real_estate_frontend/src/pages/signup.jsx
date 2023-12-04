@@ -80,7 +80,7 @@ export default function Signup() {
                 <input
                   name="password"
                   onChange={changeHandler}
-                  className="w-full rounded-xl p-4 outline-none bg-transparent"
+                  className="w-full rounded-xl password-eye-remove p-4 outline-none bg-transparent"
                   placeholder="Enter your password"
                   type={showpassword ? "text" : "password"}
                   required
@@ -101,7 +101,7 @@ export default function Signup() {
                 <input
                   name="confirmpassword"
                   onChange={changeHandler}
-                  className="w-full rounded-xl p-4 outline-none bg-transparent"
+                  className="w-full rounded-xl p-4 password-eye-remove outline-none bg-transparent"
                   placeholder="Enter your password"
                   type={showconfirmPassword ? "text" : "password"}
                   required

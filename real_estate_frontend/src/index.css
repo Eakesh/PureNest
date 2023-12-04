@@ -2,6 +2,6 @@
 @tailwind components;
 @tailwind utilities;
 
-.password-eye-remove {
-  -webkit-text-security: disc;
+.password-eye-remove::-ms-reveal {
+  display: none;
 }

@@ -54,7 +54,7 @@ export default function Signin() {
                 <input
                   onChange={changeHandler}
                   name="password"
-                  className="w-full rounded-xl p-4 outline-none bg-transparent"
+                  className="w-full rounded-xl p-4 outline-none password-eye-remove bg-transparent"
                   placeholder="Enter your password"
                   type={showpassword ? "text" : "password"}
                   required
