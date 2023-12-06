@@ -25,14 +25,17 @@ export default function Signin() {
   return (
     <div className="flex w-full items-center justify-center my-8">
       <div className="w-full flex items-center justify-center lg:w-1/2">
-        <div className=" w-5/6 max-w-[700px] px-10 py-10 rounded-3xl shadow-lg bg-white border-2 border-gray-100">
-          <h1 className="text-5xl font-semibold">Welcome Back</h1>
-          <p className="font-medium text-lg text-gray-500 mt-2">
+        <div className=" w-5/6 max-w-[700px] md:px-10 px-6 py-8 rounded-3xl shadow-lg bg-white border-2 border-gray-100">
+          <h1 className="text-3xl font-semibold">Welcome Back</h1>
+          <p className="font-medium text-md text-gray-500 mt-2">
             Welcome back! Please enter you details.
           </p>
           <form className="mt-4" method="post" onSubmit={onSigninFormSubmit}>
             <div className="flex flex-col">
-              <label className="text-lg font-medium" htmlFor="email">
+              <label
+                className="md:text-base ml-1 text-sm font-semibold"
+                htmlFor="email"
+              >
                 Email
               </label>
               <input
@@ -44,7 +47,10 @@ export default function Signin() {
               />
             </div>
             <div className="flex flex-col mt-4">
-              <label className="text-lg font-medium" htmlFor="password">
+              <label
+                className="md:text-base ml-1 text-sm font-semibold"
+                htmlFor="password"
+              >
                 Password
               </label>
               <div
@@ -79,9 +85,11 @@ export default function Signin() {
               </button>
             </div>
             <div className="mt-4 flex justify-center items-center">
-              <p className="font-medium text-base">Don't have an account?</p>
+              <p className="md:text-base ml-1 text-sm font-semibold">
+                Don't have an account?
+              </p>
               <Link to={"/signup"}>
-                <button className="ml-2 font-medium text-base text-violet-500">
+                <button className=" md:ml-2 md:text-base ml-1 text-sm font-semibold text-violet-500">
                   Sign up
                 </button>
               </Link>

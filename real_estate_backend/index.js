@@ -1,6 +1,7 @@
 import express from "express";
 import mongoose from "mongoose";
 import dotenv from "dotenv";
+import cors from "cors";
 dotenv.config();
 import userRouter from "./routes/user_route.js";
 import authRouter from "./routes/auth_route.js";
@@ -17,6 +18,7 @@ mongoose
 const PORT = 3000;
 const app = express();
 app.use(express.json());
+app.use(cors());
 app.get("/", (req, res) => {
   return res.json({ server: "up" });
 });
