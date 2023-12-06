@@ -1,10 +1,14 @@
 import React from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useState } from "react";
+import fetcher, { emailRegex, passwordRegex } from "../utils/utils";
+import Loading from "../components/loading";
 
 export default function Signin() {
+  const navigate = useNavigate();
   const [showpassword, setshowpassword] = useState(false);
   const [error, seterror] = useState("");
+  const [loading, setloading] = useState(false);
   const [userdetails, setuserdetails] = useState({
     email: "",
     password: "",
@@ -13,14 +17,41 @@ export default function Signin() {
     setshowpassword(!showpassword);
   };
   const changeHandler = (event) => {
+    seterror("");
     setuserdetails((state) => ({
       ...state,
       [event.target.name]: event.target.value,
     }));
   };
-  const onSigninFormSubmit = (event) => {
+  const onSigninFormSubmit = async (event) => {
     event.preventDefault();
-    console.log(userdetails.email, userdetails.password);
+    if (userdetails.email.match(emailRegex)) {
+      if (
+        userdetails.password.match(passwordRegex) &&
+        userdetails.password.length >= 8
+      ) {
+        setloading(true);
+        const res = await fetcher("/api/auth/signin", "POST", null, {
+          email: userdetails.email,
+          password: userdetails.password,
+        });
+        const data = await res.json();
+        if (data) {
+          setloading(false);
+        }
+        if (res.status === 200) {
+          navigate("/");
+        } else if (res.status === 404) {
+          seterror("User not found");
+        } else if (res.status === 401) {
+          seterror("Invalid Credentials");
+        }
+      } else {
+        seterror("Invalid Credentials");
+      }
+    } else {
+      seterror("please enter a valid email");
+    }
   };
   return (
     <div className="flex w-full items-center justify-center my-8">
@@ -44,6 +75,7 @@ export default function Signin() {
                 type="email"
                 className="w-full border-2 border-gray-100 focus:outline-none hover:border-black rounded-xl p-4 mt-1 bg-transparent"
                 placeholder="Enter your email"
+                required
               />
             </div>
             <div className="flex flex-col mt-4">
@@ -78,10 +110,11 @@ export default function Signin() {
             <div className="text-red-600">{error}</div>
             <div className="mt-4 flex flex-col gap-y-4">
               <button
+                disabled={loading}
                 type="submit"
                 className="active:scale-[.98] active:duration-75 transition-all hover:scale-[1.01]  ease-in-out transform py-2 bg-violet-500 rounded-xl text-white font-bold text-lg"
               >
-                Sign in
+                {loading ? <Loading /> : "Sign In"}
               </button>
             </div>
             <div className="mt-4 flex justify-center items-center">

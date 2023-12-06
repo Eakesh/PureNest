@@ -1,7 +1,7 @@
 import React from "react";
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import fetcher, { emailRegex, passwordRegex } from "../config/config";
+import fetcher, { emailRegex, passwordRegex } from "../utils/utils";
 import Loading from "../components/loading";
 
 export default function Signup() {
@@ -42,7 +42,7 @@ export default function Signup() {
             }
             if (res.status === 403) {
               seterror(data.message);
-            } else if (data.status === 422) {
+            } else if (res.status === 422) {
               seterror("Can you please retry");
             } else {
               navigate("/signin");
