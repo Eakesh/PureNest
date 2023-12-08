@@ -5,6 +5,7 @@ import Profile from "./pages/profile";
 import Signup from "./pages/signup";
 import Signin from "./pages/signin";
 import Navbar from "./components/navbar";
+import ProtectedRoute from "./components/protectedroute";
 function App() {
   return (
     <BrowserRouter>
@@ -13,8 +14,10 @@ function App() {
         <Route path="/" element={<Home />} />
         <Route path="/about" element={<About />} />
         <Route path="/profile" element={<Profile />} />
-        <Route path="/Signin" element={<Signin />} />
-        <Route path="/Signup" element={<Signup />} />
+        <Route element={<ProtectedRoute />}>
+          <Route path="/signin" element={<Signin />} />
+          <Route path="/signup" element={<Signup />} />
+        </Route>
       </Routes>
     </BrowserRouter>
   );

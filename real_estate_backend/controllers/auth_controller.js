@@ -44,3 +44,11 @@ export async function signin(req, res) {
     user: userrest,
   });
 }
+
+export async function authenticate(req, res) {
+  console.log("get hit bro");
+  if (req.cookies.access_token !== undefined) {
+    return res.status(200).json({ message: "user authenticated" });
+  }
+  return res.status(401).json({ message: "user not authenticated" });
+}

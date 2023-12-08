@@ -6,14 +6,25 @@ export const passwordRegex =
 
 export const fetcher = async (url, methodtype, options, reqparams) => {
   console.log(url);
-  const res = await fetch(API_Domain + url, {
-    method: methodtype,
-    headers: {
-      "Content-type": "application/json",
-    },
-    body: JSON.stringify(reqparams),
-  });
-  return res;
+  if (methodtype === "GET") {
+    const res = await fetch(API_Domain + url, {
+      ...options,
+    });
+
+    return new Promise((resolve, reject) => {
+      return resolve(res);
+    });
+  } else {
+    const res = await fetch(API_Domain + url, {
+      method: methodtype,
+      headers: {
+        "Content-type": "application/json",
+      },
+      ...options,
+      body: JSON.stringify(reqparams),
+    });
+    return res;
+  }
 };
 
 export default fetcher;

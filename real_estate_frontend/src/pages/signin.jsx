@@ -31,10 +31,15 @@ export default function Signin() {
         userdetails.password.length >= 8
       ) {
         setloading(true);
-        const res = await fetcher("/api/auth/signin", "POST", null, {
-          email: userdetails.email,
-          password: userdetails.password,
-        });
+        const res = await fetcher(
+          "/api/auth/signin",
+          "POST",
+          { credentials: "include" },
+          {
+            email: userdetails.email,
+            password: userdetails.password,
+          }
+        );
         const data = await res.json();
         if (data) {
           setloading(false);
