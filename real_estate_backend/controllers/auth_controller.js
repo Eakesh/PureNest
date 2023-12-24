@@ -46,9 +46,17 @@ export async function signin(req, res) {
 }
 
 export async function authenticate(req, res) {
-  console.log("get hit bro");
+  console.log("get hit bro in the matrix");
   if (req.cookies.access_token !== undefined) {
     return res.status(200).json({ message: "user authenticated" });
   }
   return res.status(401).json({ message: "user not authenticated" });
+}
+
+export async function logout(req, res) {
+  res.clearCookie("access_token");
+  return res.status(200).json({
+    success: true,
+    message: "logged out successfully",
+  });
 }

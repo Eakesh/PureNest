@@ -2,13 +2,19 @@ import React from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useState } from "react";
 import fetcher, { emailRegex, passwordRegex } from "../utils/utils";
+import { useDispatch, useSelector } from "react-redux";
 import Loading from "../components/loading";
+import {
+  SignInStart,
+  signInFailure,
+  signInSuccess,
+} from "../redux/user/userSlice";
 
 export default function Signin() {
   const navigate = useNavigate();
+  const dispatch = useDispatch();
   const [showpassword, setshowpassword] = useState(false);
-  const [error, seterror] = useState("");
-  const [loading, setloading] = useState(false);
+  const { loading, error } = useSelector((state) => state.user);
   const [userdetails, setuserdetails] = useState({
     email: "",
     password: "",
@@ -17,7 +23,7 @@ export default function Signin() {
     setshowpassword(!showpassword);
   };
   const changeHandler = (event) => {
-    seterror("");
+    dispatch(signInFailure(""));
     setuserdetails((state) => ({
       ...state,
       [event.target.name]: event.target.value,
@@ -30,7 +36,7 @@ export default function Signin() {
         userdetails.password.match(passwordRegex) &&
         userdetails.password.length >= 8
       ) {
-        setloading(true);
+        dispatch(SignInStart());
         const res = await fetcher(
           "/api/auth/signin",
           "POST",
@@ -41,21 +47,19 @@ export default function Signin() {
           }
         );
         const data = await res.json();
-        if (data) {
-          setloading(false);
-        }
         if (res.status === 200) {
+          dispatch(signInSuccess(data.user));
           navigate("/");
         } else if (res.status === 404) {
-          seterror("User not found");
+          dispatch(signInFailure("User not found"));
         } else if (res.status === 401) {
-          seterror("Invalid Credentials");
+          dispatch(signInFailure("Invalid credentials"));
         }
       } else {
-        seterror("Invalid Credentials");
+        dispatch(signInFailure("Invalid credentials"));
       }
     } else {
-      seterror("please enter a valid email");
+      dispatch(signInFailure("please enter a valid email"));
     }
   };
   return (
@@ -103,7 +107,7 @@ export default function Signin() {
                   required
                 />
                 <span className="p-2" onClick={togglePasswordVisibility}>
-                  {showpassword ? "🔒" : "👁️"}
+                  {showpassword ? "👁️" : "🔒"}
                 </span>
               </div>
             </div>

@@ -129,7 +129,7 @@ export default function Signup() {
                   required
                 />
                 <span className="p-2" onClick={togglePasswordVisibility}>
-                  {showpassword ? "🔒" : "👁️"}
+                  {showpassword ? "👁️" : "🔒"}
                 </span>
               </div>
             </div>
@@ -153,7 +153,7 @@ export default function Signup() {
                   required
                 />
                 <span className="p-2" onClick={toggleconfirmPasswordVisibility}>
-                  {showconfirmPassword ? "🔒" : "👁️"}
+                  {showconfirmPassword ? "👁️" : "🔒"}
                 </span>
               </div>
             </div>

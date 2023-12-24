@@ -1,10 +1,11 @@
 import React, { useEffect, useState } from "react";
-import { Outlet, Navigate } from "react-router-dom";
+import { Outlet, useNavigate, Navigate } from "react-router-dom";
 import fetcher from "../utils/utils";
-
+import { useSelector, useDispatch } from "react-redux";
+import { Logout } from "../redux/user/userSlice";
 export default function ProtectedRoute() {
-  console.log("hello bro");
-  const [isAuthenticated, setisAuthenticated] = useState(null);
+  const dispatch = useDispatch();
+  let user = useSelector((state) => state.user.currentUser);
   useEffect(() => {
     fetcher(
       "/api/auth/authenticate",
@@ -12,16 +13,10 @@ export default function ProtectedRoute() {
       { credentials: "include" },
       null
     ).then((res) => {
-      if (res.status === 200) {
-        setisAuthenticated(true);
-      } else {
-        setisAuthenticated(false);
+      if (res.status === 401) {
+        dispatch(Logout());
       }
     });
-  }, []);
-  return isAuthenticated !== null && isAuthenticated ? (
-    <Navigate to="/" />
-  ) : (
-    <Outlet />
-  );
+  });
+  return user ? <Navigate to="/" /> : <Outlet />;
 }
