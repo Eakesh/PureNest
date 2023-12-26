@@ -9,6 +9,7 @@ import {
   signInFailure,
   signInSuccess,
 } from "../redux/user/userSlice";
+import Oauth from "../components/Oauth";
 
 export default function Signin() {
   const navigate = useNavigate();
@@ -125,6 +126,7 @@ export default function Signin() {
               >
                 {loading ? <Loading /> : "Sign In"}
               </button>
+              <Oauth />
             </div>
             <div className="mt-4 flex justify-center items-center">
               <p className="md:text-base ml-1 text-sm font-semibold">

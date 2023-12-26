@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Outlet, useNavigate, Navigate } from "react-router-dom";
+import { Outlet, Navigate } from "react-router-dom";
 import fetcher from "../utils/utils";
 import { useSelector, useDispatch } from "react-redux";
 import { Logout } from "../redux/user/userSlice";
