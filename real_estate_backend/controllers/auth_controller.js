@@ -61,6 +61,28 @@ export async function logout(req, res) {
   });
 }
 
+export async function googleSignin(req, res) {
+  try {
+    const user = await User.findOne({ email: req.body.email });
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: "user not found",
+      });
+    } else {
+      return res.status(200).json({
+        success: true,
+        message: "User logged in",
+      });
+    }
+  } catch (e) {
+    return res.status(500).json({
+      success: false,
+      message: "Internal server error",
+    });
+  }
+}
+
 export async function googleSignup(req, res) {
   try {
     const user = await User.findOne({ email: req.body.email });
@@ -76,5 +98,10 @@ export async function googleSignup(req, res) {
       const hashedPassword = bcryptjs.hashSync(generatedPassword, 10);
       const newUser = new User({ username });
     }
-  } catch (e) {}
+  } catch (e) {
+    return res.status(500).json({
+      success: false,
+      message: "Internal server error",
+    });
+  }
 }

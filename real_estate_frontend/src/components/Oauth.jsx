@@ -1,6 +1,7 @@
 import React from "react";
 import { GoogleAuthProvider, getAuth, signInWithPopup } from "firebase/auth";
 import { app } from "../firebase.config";
+import fetcher from "../utils/utils";
 
 export default function Oauth() {
   const onClickHandler = async () => {
@@ -8,7 +9,11 @@ export default function Oauth() {
       const provider = new GoogleAuthProvider();
       const auth = getAuth(app);
       const result = await signInWithPopup(auth, provider);
-      console.log(result);
+      fetcher("/api/auth/googlesignin", "POST", null, {
+        name: result.user.displayName,
+        email: result.user.email,
+        photo: result.user.photoURL,
+      });
     } catch (e) {
       console.log(e, "google auth error");
     }
