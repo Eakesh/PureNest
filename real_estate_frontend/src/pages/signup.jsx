@@ -63,7 +63,7 @@ export default function Signup() {
     }
   };
   return (
-    <div className="flex w-full items-center justify-center my-8">
+    <div className="flex w-full items-center justify-center my-24">
       <div className="w-full flex items-center justify-center">
         <div className=" w-5/6 max-w-[700px] md:px-10 px-6 py-8 rounded-3xl shadow-lg bg-white border-2 border-gray-100">
           <h1 className="text-3xl font-semibold">Welcome</h1>

@@ -74,7 +74,7 @@ export async function googleSignup(req, res) {
         Math.random().toString(36).slice(-8) +
         Math.random().toString(36).slice(-8);
       const hashedPassword = bcryptjs.hashSync(generatedPassword, 10);
-      /// add the user here 
+      const newUser = new User({ username });
     }
   } catch (e) {}
 }

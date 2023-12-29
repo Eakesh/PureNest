@@ -8,24 +8,22 @@ import Navbar from "./components/navbar";
 import CreateListing from "./pages/createListing";
 import ProtectedRoute from "./components/protectedroute";
 import PrivateRoute from "./components/privateroute";
+import Layout from "./defaultLayout/layout";
 function App() {
   return (
     <BrowserRouter>
-      <Navbar />
       <Routes>
-        <Route path="/" element={<Home />} />
-        <Route path="/about" element={<About />} />
+        <Route path="/" element={<Layout />}>
+          <Route path="/" element={<Home />} />
+          <Route path="/about" element={<About />} />
+          <Route element={<PrivateRoute />}>
+            <Route path="/profile" element={<Profile />} />
+            <Route path="/create-listing" element={<CreateListing />} />
+          </Route>
+        </Route>
         <Route element={<ProtectedRoute />}>
           <Route path="/signin" element={<Signin />} />
           <Route path="/signup" element={<Signup />} />
-        </Route>
-        <Route element={<PrivateRoute />}>
-          <Route path="/profile" element={<Profile />} />
-          <Route path="/create-listing" element={<CreateListing />} />
-          {/* <Route
-            path="/update-listing/:listingId"
-            element={<UpdateListing />}
-          /> */}
         </Route>
         <Route path="/*" element={<h1>404 Page not found</h1>} />
       </Routes>

@@ -17,6 +17,6 @@ export default function PrivateRoute() {
         dispatch(Logout());
       }
     });
-  });
+  }, []);
   return user ? <Outlet /> : <Navigate to="/signin" />;
 }
