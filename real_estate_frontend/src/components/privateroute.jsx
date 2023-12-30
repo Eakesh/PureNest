@@ -3,6 +3,7 @@ import { Outlet, Navigate } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 import { Logout } from "../redux/user/userSlice";
 import fetcher from "../utils/utils";
+import Navbar from "./navbar";
 export default function PrivateRoute() {
   const dispatch = useDispatch();
   const user = useSelector((state) => state.user.currentUser);
@@ -18,5 +19,12 @@ export default function PrivateRoute() {
       }
     });
   }, []);
-  return user ? <Outlet /> : <Navigate to="/signin" />;
+  return user ? (
+    <>
+      <Navbar />
+      <Outlet />
+    </>
+  ) : (
+    <Navigate to="/signin" />
+  );
 }

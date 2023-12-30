@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useState } from "react";
 import fetcher, { emailRegex, passwordRegex } from "../utils/utils";
@@ -20,6 +20,9 @@ export default function Signin() {
     email: "",
     password: "",
   });
+  useEffect(() => {
+    dispatch(signInFailure(""));
+  }, []);
   const togglePasswordVisibility = () => {
     setshowpassword(!showpassword);
   };
@@ -126,7 +129,7 @@ export default function Signin() {
               >
                 {loading ? <Loading /> : "Sign In"}
               </button>
-              <Oauth />
+              <Oauth isSignin={true} />
             </div>
             <div className="mt-4 flex justify-center items-center">
               <p className="md:text-base ml-1 text-sm font-semibold">

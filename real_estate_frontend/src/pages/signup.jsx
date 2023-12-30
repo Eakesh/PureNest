@@ -1,16 +1,26 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import fetcher, { emailRegex, passwordRegex } from "../utils/utils";
+import { useSelector, useDispatch } from "react-redux";
 import Loading from "../components/loading";
+import Oauth from "../components/Oauth";
+import {
+  signUpComplete,
+  signUpFailure,
+  signUpStart,
+} from "../redux/user/userSlice";
 
 export default function Signup() {
   const navigate = useNavigate();
   const [showconfirmPassword, setShowconfirmPassword] = useState(false);
   const [showpassword, setshowpassword] = useState(false);
-  const [error, seterror] = useState("");
   const [userdetails, setuserdetails] = useState({});
-  const [loading, setloading] = useState(false);
+  const { signUploading, signUperror } = useSelector((state) => state.user);
+  const dispatch = useDispatch();
+  useEffect(() => {
+    dispatch(signUpFailure(""));
+  }, []);
   const togglePasswordVisibility = () => {
     setshowpassword(!showpassword);
   };
@@ -18,7 +28,7 @@ export default function Signup() {
     setShowconfirmPassword(!showconfirmPassword);
   };
   const changeHandler = (event) => {
-    seterror("");
+    dispatch(signUpFailure(""));
     setuserdetails((state) => ({
       ...state,
       [event.target.name]: event.target.value,
@@ -30,7 +40,7 @@ export default function Signup() {
       if (userdetails.password === userdetails.confirmpassword) {
         if (userdetails.password.match(passwordRegex)) {
           if (userdetails.password.length >= 8) {
-            setloading(true);
+            dispatch(signUpStart());
             const res = await fetcher("/api/auth/signup", "POST", null, {
               username: userdetails.username,
               email: userdetails.email,
@@ -38,28 +48,31 @@ export default function Signup() {
             });
             const data = await res.json();
             if (data) {
-              setloading(false);
+              dispatch(signUpComplete());
             }
             if (res.status === 403) {
-              seterror(data.message);
+              dispatch(signUpFailure(data.message));
             } else if (res.status === 422) {
-              seterror("Can you please retry");
+              // seterror("Can you please retry");
+              dispatch(signUpFailure("can you please retry"));
             } else {
               navigate("/signin");
             }
           } else {
-            seterror("Password should have ateast 8 characters");
+            dispatch(signUpFailure("Password should have ateast 8 characters"));
           }
         } else {
-          seterror(
-            "Password must contain uppercase,lowercase,number and special character"
+          dispatch(
+            signUpFailure(
+              "Password must contain uppercase,lowercase,number and special character"
+            )
           );
         }
       } else {
-        seterror("Password doesn't match");
+        dispatch(signUpFailure("Password doesn't match"));
       }
     } else {
-      seterror("Enter a valid email");
+      dispatch(signUpFailure("Enter a valid email"));
     }
   };
   return (
@@ -157,15 +170,16 @@ export default function Signup() {
                 </span>
               </div>
             </div>
-            <div className="text-red-500">{error}</div>
+            <div className="text-red-500">{signUperror}</div>
             <div className="mt-4 flex flex-col gap-y-4">
               <button
-                disabled={loading}
+                disabled={signUploading}
                 type="submit"
                 className="active:scale-[.98] active:duration-75 transition-all hover:scale-[1.01]  ease-in-out transform py-2 bg-violet-500 rounded-xl text-white font-bold text-lg"
               >
-                {loading ? <Loading /> : "Sign up"}
+                {signUploading ? <Loading /> : "Sign up"}
               </button>
+              <Oauth isSignin={false} />
             </div>
             <div className="mt-4 flex justify-center items-center flex-row">
               <p className="md:text-base text-sm font-semibold">

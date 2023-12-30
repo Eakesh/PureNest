@@ -5,7 +5,12 @@ import jwt from "jsonwebtoken";
 export default async function signup(req, res) {
   const { username, email, password } = req.body;
   const hashedpassword = bcryptjs.hashSync(password, 10);
-  const newUser = new User({ username, email, password: hashedpassword });
+  const newUser = new User({
+    username,
+    email,
+    password: hashedpassword,
+    isOauth: false,
+  });
   try {
     await newUser.save();
     return res
@@ -23,7 +28,6 @@ export default async function signup(req, res) {
 }
 
 export async function signin(req, res) {
-  console.log("hello");
   const { email, password } = req.body;
   const user = await User.findOne({ email: email });
   if (!user) {
@@ -35,18 +39,23 @@ export async function signin(req, res) {
       .status(401)
       .json({ success: false, message: "Invalid Credentials" });
   }
-  const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET);
-  //acts like a session storage
-  const { password: pass, ...userrest } = user._doc;
-  res.cookie("access_token", token, { httpOnly: true }).status(200).json({
-    success: true,
-    message: "Logged in Successfully",
-    user: userrest,
-  });
+  if (!user?.isOauth) {
+    const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET);
+    //acts like a session storage
+    const { password: pass, ...userrest } = user._doc;
+    res.cookie("access_token", token, { httpOnly: true }).status(200).json({
+      success: true,
+      message: "Logged in Successfully",
+      user: userrest,
+    });
+  } else {
+    return res
+      .status(401)
+      .json({ success: false, message: "Invalid credentials" });
+  }
 }
 
 export async function authenticate(req, res) {
-  console.log("get hit bro in the matrix");
   if (req.cookies.access_token !== undefined) {
     return res.status(200).json({ message: "user authenticated" });
   }
@@ -70,10 +79,22 @@ export async function googleSignin(req, res) {
         message: "user not found",
       });
     } else {
-      return res.status(200).json({
-        success: true,
-        message: "User logged in",
-      });
+      if (user?.isOauth) {
+        const { password: pass, ...userrest } = user._doc;
+        const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET);
+        return res
+          .cookie("access_token", token, { httpOnly: true })
+          .status(200)
+          .json({
+            success: true,
+            message: "User logged in",
+            user: userrest,
+          });
+      } else {
+        return res
+          .status(404)
+          .json({ success: false, message: "Invalid credentials" });
+      }
     }
   } catch (e) {
     return res.status(500).json({
@@ -96,7 +117,17 @@ export async function googleSignup(req, res) {
         Math.random().toString(36).slice(-8) +
         Math.random().toString(36).slice(-8);
       const hashedPassword = bcryptjs.hashSync(generatedPassword, 10);
-      const newUser = new User({ username });
+      const newUser = new User({
+        username: req.body.name.split(" ").join("$#$"),
+        email: req.body.email,
+        password: hashedPassword,
+        avatar: req.body.photo,
+        isOauth: true,
+      });
+      await newUser.save();
+      return res
+        .status(200)
+        .json({ success: true, message: "user signedup successfully" });
     }
   } catch (e) {
     return res.status(500).json({

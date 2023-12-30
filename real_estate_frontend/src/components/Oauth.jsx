@@ -2,18 +2,66 @@ import React from "react";
 import { GoogleAuthProvider, getAuth, signInWithPopup } from "firebase/auth";
 import { app } from "../firebase.config";
 import fetcher from "../utils/utils";
+import { useNavigate } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
+import {
+  SignInStart,
+  signInFailure,
+  signInSuccess,
+  signUpComplete,
+  signUpFailure,
+  signUpStart,
+} from "../redux/user/userSlice";
 
-export default function Oauth() {
+export default function Oauth({ isSignin }) {
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
   const onClickHandler = async () => {
     try {
+      dispatch(signInFailure(""));
+      dispatch(signUpFailure(""));
       const provider = new GoogleAuthProvider();
       const auth = getAuth(app);
       const result = await signInWithPopup(auth, provider);
-      fetcher("/api/auth/googlesignin", "POST", null, {
-        name: result.user.displayName,
-        email: result.user.email,
-        photo: result.user.photoURL,
-      });
+      if (isSignin) {
+        dispatch(SignInStart());
+        const res = await fetcher(
+          "/api/auth/googlesignin",
+          "POST",
+          { credentials: "include" },
+          {
+            email: result.user.email,
+          }
+        );
+        const data = await res.json();
+        if (res.status === 200) {
+          dispatch(signInSuccess(data.user));
+          navigate("/");
+        } else if (res.status === 404) {
+          dispatch(signInFailure(data.message));
+        } else if (res.status === 500) {
+          dispatch(signInFailure(data.message));
+        }
+      } else {
+        dispatch(signUpStart());
+        const res = await fetcher("/api/auth/googlesignup", "POST", null, {
+          name: result.user.displayName,
+          email: result.user.email,
+          photo: result.user.photoURL,
+        });
+        const data = await res.json();
+        console.log(data);
+        if (res.status === 200) {
+          dispatch(signUpComplete());
+          navigate("/signin");
+        } else if (res.status === 403) {
+          dispatch(signUpFailure("User already exists"));
+        } else if (res.status === 500) {
+          dispatch(
+            signUpFailure("Sorry error occured can you please try again")
+          );
+        }
+      }
     } catch (e) {
       console.log(e, "google auth error");
     }
@@ -48,7 +96,7 @@ export default function Oauth() {
           fill="#FBBC05"
         />
       </svg>
-      Sign in with Google
+      Sign {isSignin ? "in" : "up"} with Google
     </button>
   );
 }
