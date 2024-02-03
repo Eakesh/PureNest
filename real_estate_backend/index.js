@@ -18,9 +18,11 @@ mongoose
 
 const PORT = 3000;
 const app = express();
+const Host_url = "http://192.168.29.204:5173";
+const host = false;
 
 const corsOptions = {
-  origin: "http://localhost:5173",
+  origin: host ? Host_url : "http://localhost:5173",
   credentials: true,
 };
 

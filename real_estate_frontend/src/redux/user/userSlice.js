@@ -1,5 +1,4 @@
 import { createSlice } from "@reduxjs/toolkit";
-import { trusted } from "mongoose";
 
 const initialState = {
   currentUser: null,

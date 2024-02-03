@@ -1,5 +1,10 @@
 import React from "react";
-import { GoogleAuthProvider, getAuth, signInWithPopup } from "firebase/auth";
+import {
+  GoogleAuthProvider,
+  getAuth,
+  signInWithPopup,
+  signInWithRedirect,
+} from "firebase/auth";
 import { app } from "../firebase.config";
 import fetcher from "../utils/utils";
 import { useNavigate } from "react-router-dom";
@@ -23,6 +28,7 @@ export default function Oauth({ isSignin }) {
       const provider = new GoogleAuthProvider();
       const auth = getAuth(app);
       const result = await signInWithPopup(auth, provider);
+      console.log(result);
       if (isSignin) {
         dispatch(SignInStart());
         const res = await fetcher(
