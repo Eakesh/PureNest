@@ -4,7 +4,6 @@ import About from "./pages/about";
 import Profile from "./pages/profile";
 import Signup from "./pages/signup";
 import Signin from "./pages/signin";
-import Navbar from "./components/navbar";
 import CreateListing from "./pages/createListing";
 import ProtectedRoute from "./components/protectedroute";
 import PrivateRoute from "./components/privateroute";

@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from "react";
 import { FaEdit } from "react-icons/fa";
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
 import {
   getDownloadURL,
   getStorage,
@@ -8,19 +8,29 @@ import {
   uploadBytesResumable,
 } from "firebase/storage";
 import { app } from "../firebase.config";
+import {
+  updateUserError,
+  updateUserSuccess,
+  updateUserStart,
+} from "../redux/user/userSlice";
+import { useNavigate } from "react-router-dom";
+import fetcher from "../utils/utils";
 export default function Profile() {
-  const { currentUser } = useSelector((state) => state.user);
+  const { currentUser, error } = useSelector((state) => state.user);
+  console.log(currentUser);
   const [user, setUser] = useState({
     avatar: currentUser.avatar,
     username: currentUser.username.split("$#$").join(" "),
     email: currentUser.email,
     password: "",
   });
+  const naviagte = useNavigate();
   const [isEditable, setIsEditable] = useState(false);
   const [file, setFile] = useState(undefined);
   const fileRef = useRef();
   const [filePer, setFilePer] = useState(0);
   const [fileError, setFileError] = useState(false);
+  const dispatch = useDispatch();
   const InputClassname = "border-1 rounded-md px-4 py-2 w-full ";
   const ImageClassname =
     "max-w-xs overflow-hidden items-center rounded-full w-full h-full";
@@ -30,12 +40,14 @@ export default function Profile() {
     }
   }, [file]);
   const onchangeHandler = (event) => {
+    dispatch(updateUserError(""));
     setUser({
       ...user,
       [event.target.id]: event.target.value,
     });
   };
   const handleFileUpload = (file) => {
+    dispatch(updateUserError(""));
     const storage = getStorage(app);
     const fileName = new Date().getTime() + file.name;
     const storageRef = ref(storage, fileName);
@@ -57,6 +69,46 @@ export default function Profile() {
         });
       }
     );
+  };
+  const logout = async () => {
+    try {
+      const res = await fetcher("/api/auth/logout", "GET", {
+        credentials: "include",
+      });
+      const data = await res.json();
+      if (res.status === 200) {
+        dispatch(updateUserSuccess(null));
+        naviagte("/");
+      } else {
+        dispatch(updateUserError("Error in logging out "));
+      }
+    } catch (e) {
+      dispatch(updateUserError("Trye again"));
+    }
+  };
+  const handleUpdate = async (e) => {
+    e.preventDefault();
+    setIsEditable(false);
+    setFileError("");
+    setFilePer(0);
+    dispatch(updateUserStart());
+    console.log(currentUser);
+    try {
+      const res = await fetcher(
+        `/api/user/update/${currentUser._id}`,
+        "POST",
+        {
+          credentials: "include",
+        },
+        user
+      );
+      const updatedUser = await res.json();
+      console.log(updatedUser.user);
+      dispatch(updateUserSuccess(updatedUser.user));
+    } catch (e) {
+      console.log(e);
+      dispatch(updateUserError("Try Again"));
+    }
   };
   return (
     <div className="h-full flex justify-center items-center flex-col">
@@ -96,10 +148,10 @@ export default function Profile() {
                 id="showImage"
                 className={
                   isEditable
-                    ? ImageClassname + " hover:grayscale-[60%]"
+                    ? ImageClassname + " hover:grayscale-[60%] cursor-pointer"
                     : ImageClassname
                 }
-                src={user.avatar}
+                src={user?.avatar}
                 alt="User Profile"
               />
             </div>
@@ -173,23 +225,20 @@ export default function Profile() {
                 value={user.password}
               />
             </div>
+            <div className="pb-2 text-red-600">{error}</div>
             <div className="pb-4 flex justify-between  flex-col md:flex-row">
               <button
-                className="bg-green-300 p-2 rounded-lg w-full my-2  md:my-0 md:mx-2"
+                className="bg-green-300 p-2 rounded-lg w-full my-2 md:my-0 disabled:opacity-50 disabled:cursor-not-allowed"
                 type="submit"
-                onClick={(event) => {
-                  event.preventDefault();
-                  setIsEditable(false);
-                  setFileError("");
-                  setFilePer(0);
-                  console.log(user);
-                }}
+                onClick={handleUpdate}
+                disabled={!isEditable}
               >
                 Update Account
               </button>
               <button
                 className="bg-red-300 p-2 rounded-lg  w-full my-2 md:my-0 md:mx-2"
                 type="button"
+                onClick={logout}
               >
                 Logout
               </button>

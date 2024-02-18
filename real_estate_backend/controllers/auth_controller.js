@@ -22,8 +22,8 @@ export default async function signup(req, res) {
         .status(403)
         .json({ success: false, message: "User Already Exists!" });
     return res
-      .status(422)
-      .json({ success: false, message: "operation failed" });
+      .status(500)
+      .json({ success: false, message: "Internal server error" });
   }
 }
 
@@ -56,10 +56,19 @@ export async function signin(req, res) {
 }
 
 export async function authenticate(req, res) {
-  if (req.cookies.access_token !== undefined) {
-    return res.status(200).json({ message: "user authenticated" });
-  }
-  return res.status(401).json({ message: "user not authenticated" });
+  const token = req.cookies.access_token;
+  if (!token)
+    return res.status(401).json({ success: false, message: "unauthorized" });
+  jwt.verify(token, process.env.JWT_SECRET, (err, user) => {
+    if (err) {
+      console.log(err, "Eakesh");
+      return res.status(403).json({ success: false, message: "Forbidden" });
+    }
+    return res
+      .status(200)
+      .json({ success: true, messgae: "User authenticated successfully" });
+    next();
+  });
 }
 
 export async function logout(req, res) {

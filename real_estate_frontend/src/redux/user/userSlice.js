@@ -1,4 +1,5 @@
 import { createSlice } from "@reduxjs/toolkit";
+import { updateUser } from "../../../../real_estate_backend/controllers/user_controller";
 
 const initialState = {
   currentUser: null,
@@ -40,6 +41,18 @@ const userSlice = createSlice({
       state.signUploading = false;
       state.signUperror = action.payload;
     },
+    updateUserStart: (state, action) => {
+      state.loading = true;
+    },
+    updateUserSuccess: (state, action) => {
+      state.loading = false;
+      state.currentUser = action.payload;
+      state.error = null;
+    },
+    updateUserError: (state, action) => {
+      state.loading = false;
+      state.error = action.payload;
+    },
   },
 });
 
@@ -51,5 +64,8 @@ export const {
   signUpStart,
   signUpComplete,
   signUpFailure,
+  updateUserError,
+  updateUserStart,
+  updateUserSuccess,
 } = userSlice.actions;
 export default userSlice.reducer;
